@@ -20,7 +20,7 @@ public class ServiceTestController {
     }
 
     @RequestMapping("/not-ok")
-    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
+    @ResponseStatus(HttpStatus.CONFLICT)
     public String notOk() throws InterruptedException, ExecutionException {
         return "Not OK";
     }
