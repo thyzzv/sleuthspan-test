@@ -12,18 +12,26 @@ import java.util.concurrent.ExecutionException;
 @RequestMapping(path = "/sleuth")
 public class SleuthTestController {
 
+    static String BIG_STRING;
+
+    {
+        StringBuilder tempBigString = new StringBuilder();
+        for (int i = 0; i < 300; i++) {
+            tempBigString.append("value_").append(i).append(",");
+        }
+        BIG_STRING = tempBigString.toString();
+    }
+
+
     @Autowired
     private MyFeignClient myFeignClient;
 
     @RequestMapping("/test-ok")
     public String ok() throws InterruptedException, ExecutionException {
-        String result = myFeignClient.ok();
+        String result = myFeignClient.ok(BIG_STRING);
+        log.info("Showing result {}", result);
         return result;
     }
 
-    @RequestMapping("/test-not-ok")
-    public String notOk() throws InterruptedException, ExecutionException {
-        String result = myFeignClient.exp();
-        return result;
-    }
+
 }

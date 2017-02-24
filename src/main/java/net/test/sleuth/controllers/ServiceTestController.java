@@ -1,11 +1,14 @@
 package net.test.sleuth.controllers;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.sleuth.SpanAccessor;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.concurrent.ExecutionException;
 
 @RestController
@@ -13,15 +16,16 @@ import java.util.concurrent.ExecutionException;
 @RequestMapping(path = "/service")
 public class ServiceTestController {
 
-    @RequestMapping("/ok")
-    public String ok() throws InterruptedException, ExecutionException {
-        String result = "I'm OK";
-        return result;
-    }
+    private final SpanAccessor spanAccessor;
 
-    @RequestMapping("/not-ok")
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public String notOk() throws InterruptedException, ExecutionException {
-        return "Not OK";
+    @Autowired
+    ServiceTestController(SpanAccessor spanAccessor){
+        this.spanAccessor = spanAccessor;
+    }
+    @RequestMapping(value = "/ok/{param}", method = RequestMethod.GET)
+    public String ok(@PathVariable("param") String param, HttpServletRequest request) throws InterruptedException, ExecutionException {
+        log.info("X-Span-Name: {} ", request.getHeader("X-Span-Name"));
+        String result = "I'm OK " + param;
+        return result;
     }
 }
